@@ -17,18 +17,20 @@ document.addEventListener('click', (event) => {
 
 const getGeoLocation = () => {
   return new Promise((resolve, reject) => {
-    navigator.geolocation.getCurrentPosition(resolve, reject)
+    //navigator.geolocation.getCurrentPosition(resolve, reject)
+    resolve()
   })
 }
 
 const getWeather = (position) => {
   // FIXME replace with your own API key
   // Register for one at https://developer.forecast.io/register
-  const apiKey = '781969e20c5d295ae9bd8da62df0d3f7'
+  const apiKey = '5f7a63588456b122f60195a525882bc6'
 
-  const location = `${position.coords.latitude},${position.coords.longitude}`
+  //const location = `${position.coords.latitude},${position.coords.longitude}`
+  const location = "-34.602100,-58.384500"
   console.log(`Getting weather for ${location}`)
-  const url = `https://api.forecast.io/forecast/${apiKey}/${location}`
+  const url = `https://api.forecast.io/forecast/${apiKey}/${location}?units=ca`
 
   return window.fetch(url).then((response) => {
     return response.json()
@@ -41,16 +43,16 @@ const updateView = (weather) => {
   document.querySelector('.js-summary').textContent = currently.summary
   document.querySelector('.js-update-time').textContent = `at ${new Date(currently.time).toLocaleTimeString()}`
 
-  document.querySelector('.js-temperature').textContent = `${Math.round(currently.temperature)}° F`
-  document.querySelector('.js-apparent').textContent = `${Math.round(currently.apparentTemperature)}° F`
+  document.querySelector('.js-temperature').textContent = `${Math.round(currently.temperature)}° C`
+  document.querySelector('.js-apparent').textContent = `${Math.round(currently.apparentTemperature)}° C`
 
-  document.querySelector('.js-wind').textContent = `${Math.round(currently.windSpeed)} mph`
+  document.querySelector('.js-wind').textContent = `${Math.round(currently.windSpeed)} kph`
   document.querySelector('.js-wind-direction').textContent = getWindDirection(currently.windBearing)
 
-  document.querySelector('.js-dewpoint').textContent = `${Math.round(currently.dewPoint)}° F`
+  document.querySelector('.js-dewpoint').textContent = `${Math.round(currently.dewPoint)}° C`
   document.querySelector('.js-humidity').textContent = `${Math.round(currently.humidity * 100)}%`
 
-  document.querySelector('.js-visibility').textContent = `${Math.round(currently.windSpeed)} miles`
+  document.querySelector('.js-visibility').textContent = `${Math.round(currently.visibility)} Km`
   document.querySelector('.js-cloud-cover').textContent = `${Math.round(currently.cloudCover * 100)}%`
 
   document.querySelector('.js-precipitation-chance').textContent = `${Math.round(currently.precipProbability * 100)}%`
@@ -102,7 +104,7 @@ const sendNotification = (weather) => {
     const summary = weather.currently.summary.toLowerCase()
     const feelsLike = Math.round(weather.currently.apparentTemperature)
     let notification = new Notification('Go outside', {
-      body: `The weather is ${summary} and feels like ${feelsLike}° F`
+      body: `The weather is ${summary} and feels like ${feelsLike}° C`
     })
 
     // Show window when notification is clicked
@@ -146,3 +148,4 @@ setInterval(updateWeather, tenMinutes)
 
 // Update initial weather when loaded
 document.addEventListener('DOMContentLoaded', updateWeather)
+
