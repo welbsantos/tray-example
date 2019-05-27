@@ -30,7 +30,7 @@ const getWeather = (position) => {
   //const location = `${position.coords.latitude},${position.coords.longitude}`
   const location = "-34.602100,-58.384500"
   console.log(`Getting weather for ${location}`)
-  const url = `https://api.forecast.io/forecast/${apiKey}/${location}?units=ca`
+  const url = `https://api.forecast.io/forecast/${apiKey}/${location}?units=ca&exclude=minutely,hourly,daily,alerts,flags`
 
   return window.fetch(url).then((response) => {
     return response.json()
