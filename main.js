@@ -27,7 +27,7 @@ const createTray = () => {
     toggleWindow()
 
     // Show devtools when command clicked
-    if (window.isVisible() && process.defaultApp && event.metaKey) {
+    if (window.isVisible() && process.defaultApp && event.ctrlKey) {
       window.openDevTools({mode: 'detach'})
     }
   })
