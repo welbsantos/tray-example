@@ -1,7 +1,10 @@
 const {ipcRenderer, shell} = require('electron')
+const request = require('request');
 
 let previousWeather = undefined
 let voice = undefined
+let defaultIp = undefined
+let myposition = {}
 
 document.addEventListener('click', (event) => {
   if (event.target.href) {
@@ -18,17 +21,38 @@ document.addEventListener('click', (event) => {
 const getGeoLocation = () => {
   return new Promise((resolve, reject) => {
     //navigator.geolocation.getCurrentPosition(resolve, reject)
-    resolve()
+
+    request('http://ipapi.co/ip', (error, responde, body) => {
+      if(body.length > 0) {
+          defaultIp = body
+      }
+
+      request('http://ipapi.co/' + defaultIp +'/json/', (error, responde, body) => {
+        if(body.length > 0) {
+            var results = JSON.parse(body);
+            myposition = {
+                coords: {
+                  "latitude": results.latitude,
+                  "longitude": results.longitude
+                }
+            }
+        }
+      
+      resolve()
+
+      })
+      
+    })
+    
   })
 }
 
-const getWeather = (position) => {
+
+const getWeather = () => {
   // FIXME replace with your own API key
   // Register for one at https://developer.forecast.io/register
   const apiKey = '5f7a63588456b122f60195a525882bc6'
-
-  //const location = `${position.coords.latitude},${position.coords.longitude}`
-  const location = "-34.602100,-58.384500"
+  const location = `${myposition.coords.latitude},${myposition.coords.longitude}`
   console.log(`Getting weather for ${location}`)
   const url = `https://api.forecast.io/forecast/${apiKey}/${location}?units=ca&exclude=minutely,hourly,daily,alerts,flags`
 
