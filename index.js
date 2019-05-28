@@ -4,7 +4,6 @@ const request = require('request');
 let previousWeather = undefined
 let voice = undefined
 let defaultIp = undefined
-let myposition = {}
 
 document.addEventListener('click', (event) => {
   if (event.target.href) {
@@ -20,14 +19,27 @@ document.addEventListener('click', (event) => {
 
 const getGeoLocation = () => {
   return new Promise((resolve, reject) => {
-    //navigator.geolocation.getCurrentPosition(resolve, reject)
+    var myposition
+    request('http://ipapi.co/ip', (error, response, body) => {
 
-    request('http://ipapi.co/ip', (error, responde, body) => {
+      if (error) { 
+        console.log (error)
+        reject(error) 
+        return
+      }
+
       if(body.length > 0) {
           defaultIp = body
       }
 
-      request('http://ipapi.co/' + defaultIp +'/json/', (error, responde, body) => {
+      request('http://ipapi.co/' + defaultIp +'/json/', (error, response, body) => {
+
+        if (error) { 
+          console.log(error)
+          reject (error) 
+          return
+        }
+
         if(body.length > 0) {
             var results = JSON.parse(body);
             myposition = {
@@ -38,7 +50,7 @@ const getGeoLocation = () => {
             }
         }
       
-      resolve()
+      resolve(myposition)
 
       })
       
@@ -48,7 +60,7 @@ const getGeoLocation = () => {
 }
 
 
-const getWeather = () => {
+const getWeather = (myposition) => {
   // FIXME replace with your own API key
   // Register for one at https://developer.forecast.io/register
   const apiKey = '5f7a63588456b122f60195a525882bc6'
@@ -114,7 +126,7 @@ const isWeatherIdeal = (weather) => {
   if (weather.currently.precipIntensity !== 0) return false
 
   // Ideal weather is within 3 degress of the ideal temperature
-  const idealTemperature = 70
+  const idealTemperature = 25
   const feelsLikeTemperature = weather.currently.apparentTemperature
   return Math.abs(idealTemperature - feelsLikeTemperature) <= 3
 }
