@@ -21,6 +21,7 @@ app.on('window-all-closed', () => {
 
 const createTray = () => {
   tray = new Tray(path.join(assetsDirectory, 'sunTemplate.png'))
+  tray.setTitle("Loading...")
   tray.on('right-click', toggleWindow)
   tray.on('double-click', toggleWindow)
   tray.on('click', function (event) {

@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/kevinsawicki/tray-example#readme",
   "devDependencies": {
-    "electron-packager": "^7.3.0",
+    "electron-packager": "^12.1.0",
     "electron-prebuilt": "^1.2.7"
   }
 }

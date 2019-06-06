@@ -19,7 +19,7 @@ document.addEventListener('click', (event) => {
 
 const getGeoLocation = () => {
   return new Promise((resolve, reject) => {
-    var myposition
+    let results
     request('http://ipapi.co/ip', (error, response, body) => {
 
       if (error) { 
@@ -41,16 +41,10 @@ const getGeoLocation = () => {
         }
 
         if(body.length > 0) {
-            var results = JSON.parse(body);
-            myposition = {
-                coords: {
-                  "latitude": results.latitude,
-                  "longitude": results.longitude
-                }
-            }
+          results = JSON.parse(body)
         }
       
-      resolve(myposition)
+      resolve(results)
 
       })
       
@@ -59,17 +53,21 @@ const getGeoLocation = () => {
   })
 }
 
-
 const getWeather = (myposition) => {
   // FIXME replace with your own API key
   // Register for one at https://developer.forecast.io/register
   const apiKey = '5f7a63588456b122f60195a525882bc6'
-  const location = `${myposition.coords.latitude},${myposition.coords.longitude}`
-  console.log(`Getting weather for ${location}`)
+  const location = `${myposition.latitude},${myposition.longitude}`
+  console.log(`Getting weather for ${myposition.city} (${myposition.latitude},${myposition.longitude})`)
   const url = `https://api.forecast.io/forecast/${apiKey}/${location}?units=ca&exclude=minutely,hourly,daily,alerts,flags`
 
   return window.fetch(url).then((response) => {
-    return response.json()
+    
+    let response_promise = response.json().then((response_json) => { 
+      response_json.myposition = myposition 
+      return response_json
+    })
+    return response_promise
   })
 }
 
@@ -77,7 +75,7 @@ const updateView = (weather) => {
   const currently = weather.currently
 
   document.querySelector('.js-summary').textContent = currently.summary
-  document.querySelector('.js-update-time').textContent = `at ${new Date(currently.time).toLocaleTimeString()}`
+  document.querySelector('.js-update-time').textContent = `at ${new Date(currently.time).toLocaleTimeString()} in ${weather.myposition.city}, ${weather.myposition.country_name}`
 
   document.querySelector('.js-temperature').textContent = `${Math.round(currently.temperature)}° C`
   document.querySelector('.js-apparent').textContent = `${Math.round(currently.apparentTemperature)}° C`
